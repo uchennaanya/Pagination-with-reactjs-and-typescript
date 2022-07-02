@@ -1,26 +1,50 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import { Container, Table, TableContainer } from "./styles";
+import { PaginationData, User } from "./types";
 
 function App() {
+  const [data, setData] = useState<PaginationData<User>>();
+  const [limit, setLimit] = useState(10);
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    const getData = async () => {
+      const tableData = (await import("./getTableData")).default<User>({
+        limit,
+        offset,
+      });
+      setData(tableData);
+    };
+    getData();
+  }, [limit, offset]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container>
+     <TableContainer>
+        <Table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data?.data.map((user) => {
+              return (
+                <tr key={user.id}>
+                  <td>{user.id}</td>
+                  <td>{user.name}</td>
+                  <td>{user.email}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      </TableContainer>
+    </Container>
   );
 }
 
 export default App;
+
